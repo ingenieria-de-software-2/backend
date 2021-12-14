@@ -4,11 +4,17 @@ const cors = require("cors");
 const db = require("./db");
 const userrouter = require("./routes/usuario.routes");
 const dataroutes = require("./routes/data.routes");
+const http = require("http");
+const socketIO = require("socket.io");
+const socket = require("./sockets/sockets");
 
 const app = express();
 app.set("port", process.env.PORT || 3000);
 
-app.use(cors());
+let httpServer = new http.Server(app);
+let io = new socketIO.Server(httpServer);
+
+app.use(cors({ origin: true, credentials: true }));
 app.use(morgan("dev"));
 app.use(express.json());
 
@@ -16,5 +22,12 @@ app.use(express.json());
 app.use(userrouter);
 app.use(dataroutes);
 
-module.exports = app;
+/* usando los sockets */
+io.on('connection', cliente => {
+    console.log("cliente conectado");
 
+    socket.desconectar(cliente);
+    socket.wsockettemp(cliente, io);
+});
+
+module.exports = { app, httpServer };

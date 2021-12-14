@@ -1,5 +1,5 @@
-const app = require("./app");
+const { httpServer, app } = require("./app");
 
-app.listen(app.get("port"), () => {
+httpServer.listen(app.get("port"), () => {
     console.log(`Serbidor corriendo en el puerto ${app.get("port")}`);
 });
